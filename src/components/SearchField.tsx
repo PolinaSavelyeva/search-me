@@ -5,7 +5,7 @@ import { useState } from "react";
 // import { Button } from "@mui/material";
 
 export default function SearchField() {
-    const [input, setInput] = useState('');
+    const [_, setInput] = useState('');
 
     // const handleClick = () => {
     //     console.log(input);
