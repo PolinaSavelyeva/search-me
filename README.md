@@ -1,6 +1,6 @@
 # search-me
 
-A web page for search using [The Rick And Morty API](https://rickandmortyapi.com/). You can try it on GitHub Pages [here]().
+A web page for search using [The Rick And Morty API](https://rickandmortyapi.com/). You can try it on GitHub Pages [here](https://polinasavelyeva.github.io/search-me/).
 
 ## Installation & Usage
 
