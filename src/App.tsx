@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { ShadowBox } from "./components/ShadowBox.tsx";
 
-type Character = { name: string, created: string, status: "Alive" | "Dead" | "Unknown", url: string };
+type Character = { name: string, created: string, status: "Alive" | "Dead" | "unknown", url: string };
 
 export default function App() {
   let name = '';
@@ -14,14 +14,12 @@ export default function App() {
   const [canShow, setCanShow] = useState(false);
 
   async function fetchCharacters(desiredName: string, page?: number): Promise<Character[]> {
-    page = page || 1;
     try {
-      const { data } = await axios.get("https://rickandmortyapi.com/api/character", { params: { name: name, page: page } });
-
+      const { data } = await axios.get("https://rickandmortyapi.com/api/character", { params: { name: desiredName, page: page } });
       const characters = data.results;
-      if (page < data.info.pages)
-        return characters.concat(await fetchCharacters(desiredName, page + 1));
-      return characters;
+      const remaining_characters = await Promise.all(Array.from({ length: data.info.pages }, (_, i) => i + 1).slice(1).map((page) =>
+        axios.get('https://rickandmortyapi.com/api/character', { params: { name: desiredName, page: page } }).then((res) => res.data.results)));
+      return remaining_characters.flat().concat(characters)
     } catch {
       return [];
     }
@@ -30,14 +28,17 @@ export default function App() {
   async function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const newName = event.target.value;
     name = newName;
-    console.log(name);
     if (name.length >= 4) {
       setCanShow(true)
-      setCharacters(await fetchCharacters(name))
+      const characters = await fetchCharacters(name);
+      if (name == newName)
+        console.log(characters);
+      setCharacters(characters);
     } else {
-      if (canShow)
+      if (canShow) {
         setCharacters([])
-      setCanShow(false)
+        setCanShow(false)
+      }
     }
   }
 

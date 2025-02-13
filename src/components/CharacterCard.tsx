@@ -2,7 +2,7 @@ import { Grid2, Stack, Typography } from "@mui/material";
 import { ShadowBox } from "./ShadowBox";
 import { format } from "date-fns";
 
-const Status = (props: { status: "Alive" | "Dead" | "Unknown" }) => {
+const Status = (props: { status: "Alive" | "Dead" | "unknown" }) => {
     let color;
     switch (props.status) {
         case "Dead": {
@@ -20,7 +20,7 @@ const Status = (props: { status: "Alive" | "Dead" | "Unknown" }) => {
     return (<Typography variant="body2" fontWeight="700" color={color}>{props.status[0].toUpperCase() + props.status.slice(1)}</Typography>);
 }
 
-export default function CharacterCard(props: { minHeight: string, name: string, date: string, status: "Alive" | "Dead" | "Unknown", href: string }) {
+export default function CharacterCard(props: { minHeight: string, name: string, date: string, status: "Alive" | "Dead" | "unknown", href: string }) {
     return (
         <ShadowBox padding="20px 30px 20px 30px" onClick={() => window.location.href = props.href}>
             <Stack direction="column" justifyContent="space-between" height="100%" minHeight={props.minHeight} spacing={"42px"}>
