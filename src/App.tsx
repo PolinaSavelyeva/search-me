@@ -17,9 +17,9 @@ export default function App() {
     try {
       const { data } = await axios.get("https://rickandmortyapi.com/api/character", { params: { name: desiredName, page: page } });
       const characters = data.results;
-      const remaining_characters = await Promise.all(Array.from({ length: data.info.pages }, (_, i) => i + 1).slice(1).map((page) =>
+      const remainingCharacters = await Promise.all(Array.from({ length: data.info.pages }, (_, i) => i + 1).slice(1).map((page) =>
         axios.get('https://rickandmortyapi.com/api/character', { params: { name: desiredName, page: page } }).then((res) => res.data.results)));
-      return remaining_characters.flat().concat(characters)
+      return remainingCharacters.flat().concat(characters)
     } catch {
       return [];
     }
