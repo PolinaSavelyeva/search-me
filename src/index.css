@@ -9,4 +9,9 @@ body {
     width: 100vw;
     height: 100vh;
     background-color: #FFFFFF;
+    scrollbar-gutter: none;
+}
+
+html {
+    scrollbar-gutter: stable;
 }

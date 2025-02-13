@@ -51,7 +51,7 @@ export default function App() {
         display: 'flex',
         justifyContent: 'center',
         flexDirection: 'column',
-        alignItems: 'center'
+        alignItems: 'center',
       }}>
         <ShadowBox
           sx={{ width: "100%", maxWidth: "626px", }}
