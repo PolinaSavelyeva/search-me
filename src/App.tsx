@@ -1,24 +1,45 @@
-import { Container, Grid2, Stack, ThemeProvider, Typography } from "@mui/material";
+import { Container, Grid2, Stack, TextField, ThemeProvider, Typography } from "@mui/material";
 import "./index.css"
 import { theme } from "./Theme";
-import SearchField from "./components/SearchField.tsx";
 import CharacterCard from "./components/CharacterCard.tsx";
+import React, { useState } from "react";
+import axios from "axios";
+import { ShadowBox } from "./components/ShadowBox.tsx";
 
-const characters: { name: string, date: string, status: "alive" | "unknown" | "dead", href: string }[] = [
-  { name: "Rick", date: "01.01.1992", status: "alive", href: "https://rickandmortyapi.com/documentation/#rest" },
-  { name: "Morty", date: "01.01.2100", status: "unknown", href: "https://rickandmortyapi.com/documentation/#rest" },
-  { name: "Summer", date: "17.12.2025", status: "dead", href: "https://rickandmortyapi.com/documentation/#rest" },
-  { name: "Beth", date: "15.03.2000", status: "alive", href: "https://rickandmortyapi.com/documentation/#rest" },
-  { name: "Jerry", date: "13.02.2134", status: "alive", href: "https://rickandmortyapi.com/documentation/#rest" },
-  { name: "Birdperson", date: "99.99.9999", status: "dead", href: "https://rickandmortyapi.com/documentation/#rest" },
-  { name: "Mr. Meeseeks", date: "22.11.1345", status: "unknown", href: "https://rickandmortyapi.com/documentation/#rest" },
-  { name: "Squanchy", date: "22.12.2133", status: "alive", href: "https://rickandmortyapi.com/documentation/#rest" },
-  { name: "Meme", date: "01.01.2100", status: "alive", href: "https://rickandmortyapi.com/documentation/#rest" },
-]
-
-const [first, second, ...rest] = characters;
+type Character = { name: string, created: string, status: "Alive" | "Dead" | "Unknown", url: string };
 
 export default function App() {
+  let name = '';
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [canShow, setCanShow] = useState(false);
+
+  async function fetchCharacters(desiredName: string, page?: number): Promise<Character[]> {
+    page = page || 1;
+    try {
+      const { data } = await axios.get("https://rickandmortyapi.com/api/character", { params: { name: name, page: page } });
+
+      const characters = data.results;
+      if (page < data.info.pages)
+        return characters.concat(await fetchCharacters(desiredName, page + 1));
+      return characters;
+    } catch {
+      return [];
+    }
+  }
+
+  async function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const newName = event.target.value;
+    name = newName;
+    console.log(name);
+    if (name.length >= 4) {
+      setCanShow(true)
+      setCharacters(await fetchCharacters(name))
+    } else {
+      if (canShow)
+        setCharacters([])
+      setCanShow(false)
+    }
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -31,25 +52,49 @@ export default function App() {
         flexDirection: 'column',
         alignItems: 'center'
       }}>
-        <SearchField />
+        <ShadowBox
+          sx={{ width: "100%", maxWidth: "626px", }}
+          boxSizing="border-box"
+          padding="19px 25px 19px 25px"
+        >
+          <TextField
+            onChange={handleChange}
+            variant="standard"
+            placeholder="Search characters..."
+            autoFocus
+            fullWidth
+            slotProps={{
+              input: {
+                disableUnderline: true,
+              },
+            }}
+            sx={{
+              '& input::placeholder': { ...theme.typography.h2, opacity: "100%" },
+              '.MuiInputBase-input': { ...theme.typography.h2, color: 'transparent', textShadow: '0 0 0 #656EC2', padding: 0 },
+            }} />
+        </ShadowBox>
         <Stack width="100%" maxWidth="626px" direction="row" marginTop="13px" paddingLeft="39px" boxSizing="border-box">
-          <Typography>Found characters:&nbsp;</Typography>
-          <Typography>{characters.length}</Typography>
+          {canShow ? (
+            <>
+              <Typography>Found characters:&nbsp;</Typography>
+              <Typography>{characters.length}</Typography>
+            </>
+          ) : null}
         </Stack>
         <Grid2 container marginTop="67px" marginBottom="20px" width="100%" direction="row" spacing="20px">
           {characters.length === 1 ? (
-            <CharacterCard minHeight="262px" name={first.name} date={first.date} status={first.status} href={first.href} />
+            <CharacterCard minHeight="262px" name={characters[0].name} date={characters[0].created} status={characters[0].status} href={characters[0].url} />
           ) : characters.length >= 2 ? (
             <>
-              <CharacterCard minHeight="262px" name={first.name} date={first.date} status={first.status} href={first.href} />
-              <CharacterCard minHeight="262px" name={second.name} date={second.date} status={second.status} href={second.href} />
+              <CharacterCard minHeight="262px" name={characters[0].name} date={characters[0].created} status={characters[0].status} href={characters[0].url} />
+              <CharacterCard minHeight="262px" name={characters[1].name} date={characters[1].created} status={characters[1].status} href={characters[1].url} />
             </>
           ) : null}
         </Grid2>
         <Grid2 container marginBottom="128px" width="100%" direction="row" spacing="20px" columns={{ xs: 4, sm: 8, md: 12, lg: 12 }}>
-          {rest.map((val, index) => (
+          {characters.slice(2).map((val, index) => (
             <Grid2 key={index} size={{ xs: 4, sm: 8, md: 6, lg: 4 }}>
-              <CharacterCard minHeight="150px" name={val.name} date={val.date} status={val.status} href={val.href} />
+              <CharacterCard minHeight="150px" name={val.name} date={val.created} status={val.status} href={val.url} />
             </Grid2>
           ))}
         </Grid2>

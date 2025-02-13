@@ -1,31 +1,26 @@
 import { Grid2, Stack, Typography } from "@mui/material";
 import { ShadowBox } from "./ShadowBox";
+import { format } from "date-fns";
 
-
-const Status = (props: { status: "alive" | "dead" | "unknown" }) => {
+const Status = (props: { status: "Alive" | "Dead" | "Unknown" }) => {
     let color;
-    let text;
     switch (props.status) {
-        case "dead": {
+        case "Dead": {
             color = "#820A0A"
-            text = "Dead"
             break;
         }
-        case "alive": {
+        case "Alive": {
             color = "#267504"
-            text = "Alive"
             break;
         }
         default: {
             color = "#767676"
-            text = "Unknown"
-            break;
         }
     }
-    return (<Typography variant="body2" fontWeight="700" color={color}>{text}</Typography>);
+    return (<Typography variant="body2" fontWeight="700" color={color}>{props.status[0].toUpperCase() + props.status.slice(1)}</Typography>);
 }
 
-export default function CharacterCard(props: { minHeight: string, name: string, date: string, status: "alive" | "dead" | "unknown", href: string }) {
+export default function CharacterCard(props: { minHeight: string, name: string, date: string, status: "Alive" | "Dead" | "Unknown", href: string }) {
     return (
         <ShadowBox padding="20px 30px 20px 30px" onClick={() => window.location.href = props.href}>
             <Stack direction="column" justifyContent="space-between" height="100%" minHeight={props.minHeight} spacing={"42px"}>
@@ -37,7 +32,7 @@ export default function CharacterCard(props: { minHeight: string, name: string, 
                     </Stack>
                     <Stack direction="row">
                         <Typography variant="body2">Created:&nbsp;</Typography>
-                        <Typography variant="body2">{props.date}</Typography>
+                        <Typography variant="body2">{format(new Date(props.date), "dd.MM.yyyy")}</Typography>
                     </Stack>
                 </Grid2>
             </Stack>
